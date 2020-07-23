@@ -1,0 +1,55 @@
+import json
+import requests
+import yagmail
+import time
+
+def send_mail(subject, contents):#定义一个send mail函数，有subject和contents
+    if subject == '健康打卡成功':
+        yag = yagmail.SMTP(user='1031934528@qq.com', password='{}', host='smtp.qq.com')
+        yag.send(to='1031934528@qq.com', subject=subject, contents=contents)
+    else:
+        yag = yagmail.SMTP(user='1031934528@qq.com', password='{}', host='smtp.qq.com')
+        yag.send(to='1031934528@qq.com', subject=subject, contents=contents)
+
+
+post_url = 'https://reportedh5.17wanxiao.com/sass/api/epmpics'  # 提交参数的地址
+
+headers = {
+
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 8.1.0; JKM-AL00a Build/HUAWEIJKM-AL00a; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.157 Mobile Safari/537.36 Wanxiao/5.1.5',
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept': 'application/json, text/plain, */*',
+    'Connection': 'keep-alive',
+    'Host': 'reportedh5.17wanxiao.com',
+    'Content-Length': '1727',
+    'Origin': 'https://reportedh5.17wanxiao.com',
+    'Content-Type': 'application/json;charset=UTF-8',
+    'Referer': 'https://reportedh5.17wanxiao.com/health/index.html?templateid=pneumonia&businessType=epmpics&customerId=18018&systemType=Android&UAinfo=wanxiao&versioncode=10515101&token=da4a1e38-632a-4d70-83f3-4d73d8e8999d',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Cookie': '',
+    'X-Requested-With': 'com.newcapec.mobile.ncp'
+
+}
+
+json_load = {"businessType":"epmpics","method":"submitUpInfo","jsonData":{"deptStr":{"deptid":[],"text":"学生（人工智能学院）-计算机应用技术(网站开发)-19计算机应用技术"},"areaStr":"{\"streetNumber\":\"4号之二十二\",\"street\":\"宝岗大道\",\"district\":\"海珠区\",\"city\":\"广州市\",\"province\":\"广东省\",\"town\":\"\",\"pois\":\"花园\",\"lng\":113,\"lat\":23,\"address\":\"海珠区\",\"text\":\"广东省-广州市\",\"code\":\"\"}","reportdate":
+    str(int(time.time() * 1000)),
+    "customerid":"[]","deptid":[],"source":"app","templateid":"pneumonia","stuNo":"[]","username":"[]","phonenum":"","userid":"[]","updatainfo":[{"propertyname":"isConfirmed","value":"否"},{"propertyname":"isdefinde","value":"否"},{"propertyname":"symptom","value":"均无上述情况"},{"propertyname":"sfddgr","value":"否"},{"propertyname":"zdyqdq0511","value":""},{"propertyname":"isTransitArea","value":"是"},{"propertyname":"gtjz0511","value":""},{"propertyname":"homehealth","value":""},{"propertyname":"isTransitProvince","value":""},{"propertyname":"hcdzsj","value":"13700000000"},{"propertyname":"emergencyContact","value":"xxx"},{"propertyname":"mergencyPeoplePhone","value":"13700000000"},{"propertyname":"assistRemark","value":""}],"gpsType":1}}
+
+response = requests.post(url=post_url, data=json.dumps(json_load), headers=headers, verify=False)
+try:
+
+    mark_msg = response.json()['msg']  # 成功
+    mark_code = response.json()['code']  # 10000
+    mark_data = response.json()['data']  # 1
+
+    text = ('msg = ' + mark_msg + '\t' + 'data = ' + str(mark_data) + '\t' + 'code = ' + str(mark_code))
+
+except Exception:
+    text = response.json()
+
+print(text)
+if str(mark_msg) == '成功' and str(mark_code) == '10000' and str(mark_data) == '1':
+    send_mail(subject='健康打卡成功', contents=text)
+
+else:
+    send_mail(subject='健康打卡失败', contents=text)
